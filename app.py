@@ -17,8 +17,8 @@ st.title("📱 Panel de Monitoreo - Bot TECHNOBIT")
 # Función para obtener los mensajes (con caché de 5 segundos para no saturar)
 @st.cache_data(ttl=5)
 def obtener_mensajes():
-    # Trae todos los mensajes ordenados por fecha (del más viejo al más nuevo)
-    respuesta = supabase.table("historial_mensajes").select("*").order("created_at", desc=False).execute()
+    # Traemos los 1000 MÁS NUEVOS (desc=True) para sortear el límite de Supabase
+    respuesta = supabase.table("historial_mensajes").select("*").order("created_at", desc=True).limit(1000).execute()
     return respuesta.data
 
 # Obtenemos los datos
@@ -28,6 +28,9 @@ if not datos:
     st.info("Todavía no hay mensajes registrados. ¡Escribile al bot para probar!")
 else:
     df = pd.DataFrame(datos)
+    
+    # Damos vuelta el DataFrame para que el chat se lea de arriba hacia abajo
+    df = df.iloc[::-1]
     
     # Obtener números de teléfono únicos para armar el menú lateral
     numeros_unicos = df["numero_cliente"].unique()
@@ -46,9 +49,10 @@ else:
             # Mensaje del cliente
             st.chat_message("user").write(fila["mensaje"])
         else:
-            # Mensaje del bot
-            st.chat_message("assistant", avatar="🤖").write(fila["mensaje"])
+            # Mensaje del bot (con avatar actualizado para proyectar mayor confianza)
+            st.chat_message("assistant", avatar="🧑‍💻").write(fila["mensaje"])
             
     # Botón manual por si querés forzar la actualización rápido
     if st.sidebar.button("🔄 Actualizar Chat"):
-        st.rerun()
+        obtener_mensajes.clear() # Limpia la memoria caché
+        st.rerun() # Recarga la pantalla
