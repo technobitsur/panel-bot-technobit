@@ -6,11 +6,10 @@ import pandas as pd
 st.set_page_config(page_title="Panel de Control - Bot TECHNOBIT", page_icon="📱", layout="wide")
 
 # ==========================================
-# CONFIGURACIÓN SUPABASE 
-# Pegá tus datos acá reemplazando el texto adentro de las comillas
+# CONFIGURACIÓN SUPABASE (Usando secrets por seguridad)
 # ==========================================
-SUPABASE_URL = "https://wogdepprdftmirywkefp.supabase.co"
-SUPABASE_KEY = "sb_publishable_NpD48nLRbcngTIobncCGzQ_01znDDso"
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
